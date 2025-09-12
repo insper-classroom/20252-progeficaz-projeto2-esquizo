@@ -35,5 +35,5 @@ def teste_pega_imovel_por_id_inexistente(client):
     response = client.get('imoveis/9999999999999')
     assert response.status_code == 404
     data = response.get_json()
-    assert data == {"error":"Ióvel não encontrado!"}
+    assert data == {"error":"Imovel nao encontrado!"}
     

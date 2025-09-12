@@ -29,3 +29,23 @@ def listar_imoveis():
             item[nome_coluna] = valor
         imoveis.append(item)
     return jsonify(imoveis) #retorna dados em formato json
+
+@bp.route('/imoveis/<int:id>', methods=['GET'])
+def pega_imovel_por_id(id):
+    con = get_connection()
+    cursor = con.cursor()
+    cursor.execute("SELECT * FROM imoveis WHERE id=%s", (id,))
+    row = cursor.fetchone() #pega de linha em linha
+    con.close()
+    
+    if row is None:
+        return jsonify({"error":"Imovel nao encontrado!"}), 404
+    
+    colunas = [desc[0] for desc in cursor.description]
+    imovel={}
+    for i, valor in enumerate(row):
+        imovel[colunas[i]] = valor
+    
+    return jsonify(imovel), 200
+    
+    
