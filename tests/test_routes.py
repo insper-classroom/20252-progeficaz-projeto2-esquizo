@@ -37,6 +37,26 @@ def test_add_imoveis(client):
     data = response.get_json() #pega a resposta de json do programa(mensagem q voltara)
     assert data['message'] == 'alguma Coisa aconteceu' #faz a mensagem voltar desse jeito
     
+def test_update_imoveis(client):
+    mock_conn = MagicMock()
+    mock_cursor = MagicMock()
+    mock_conn.cursor.return_value = mock_cursor
+        
+    novo_imovel = {
+        "logradouro": "Rua das Flores",
+        "tipo_logradouro": "Rua",
+        "bairro": "Centro",
+        "cidade": "São Paulo",
+        "cep": "01000-000",
+        "tipo": "Apartamento",
+        "valor": 500000.00,
+        "data_aquisicao": "2023-05-10"
+    }
+    
+    response = client.post('/update/1')
+    assert response.status_code == 200
+    data = response.get_json() 
+    assert data['message'] == 'alguma Coisa aconteceu enquanto atualizava :0' 
 
 def teste_lista_imoveis(client):
     response = client.get('/imoveis')
