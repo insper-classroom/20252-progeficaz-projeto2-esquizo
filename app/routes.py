@@ -75,10 +75,36 @@ def pega_imovel_por_id(id):
     
     return jsonify(imovel), 200
     
-@bp.route('/update/<id>', methods=['PUT'])
+@bp.route('/update/<int:id>', methods=['PUT'])
 def update_imoveis(id):
-    note_id = request.form.get('id')
-    titulo = request.form.get('titulo')
-    detalhes = request.form.get('detalhes')
-    update_fromID(note_id, titulo, detalhes)
-    return redirect(url_for("index"))
+    data = request.get_json()
+
+
+    logradouro = data.get("logradouro") #pega informacoes futuras que entram nas condicoes do post 
+    tipo_logradouro = data.get("tipo_logradouro")
+    bairro = data.get("bairro")
+    cidade = data.get("cidade")
+    cep = data.get("cep")
+    tipo = data.get("tipo")
+    valor = data.get("valor")
+    data_aquisicao = data.get("data_aquisicao")
+    with sqlite3.connect('banco.db') as con:
+        cursor = con.cursor()
+        cursor.execute("""
+            UPDATE imoveis
+            SET logradouro = ?, 
+                tipo_logradouro = ?, 
+                bairro = ?, 
+                cidade = ?, 
+                cep = ?, 
+                tipo = ?, 
+                valor = ?, 
+                data_aquisicao = ?
+            WHERE id = ?
+        """, (logradouro, tipo_logradouro, bairro, cidade, cep, tipo, valor, data_aquisicao, id)) #o que cada incognita representa
+        con.commit()
+    
+    if cursor.rowcount == 0: #nenhuma linha foi editada entao o banco de dados  recebe um id nulo
+        return jsonify({"message": "nao eh possivel realizar alguma alteracao"}), 404
+        
+    return jsonify({"message": "Imóvel alterado com sucesso"}), 200   

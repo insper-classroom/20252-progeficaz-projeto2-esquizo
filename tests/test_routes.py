@@ -32,7 +32,7 @@ def test_add_imoveis(client):
         "data_aquisicao": "2023-05-10"
     }
     
-    response = client.post('/add')
+    response = client.post('/add', json=novo_imovel)
     assert response.status_code == 201
     data = response.get_json() #pega a resposta de json do programa(mensagem q voltara)
     assert data['message'] == 'alguma Coisa aconteceu' #faz a mensagem voltar desse jeito
