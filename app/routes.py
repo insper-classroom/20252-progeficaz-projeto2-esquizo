@@ -1,7 +1,8 @@
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, jsonify, request, redirect, url_for
 import sqlite3
 from .db import get_connection
+from app.models import *
 
 bp = Blueprint('routes', __name__)
 
@@ -74,4 +75,10 @@ def pega_imovel_por_id(id):
     
     return jsonify(imovel), 200
     
-    
+@bp.route('/update/<id>', methods=['PUT'])
+def update_imoveis(id):
+    note_id = request.form.get('id')
+    titulo = request.form.get('titulo')
+    detalhes = request.form.get('detalhes')
+    update_fromID(note_id, titulo, detalhes)
+    return redirect(url_for("index"))
