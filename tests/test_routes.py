@@ -23,7 +23,7 @@ def teste_lista_imoveis(client):
     assert 'cidade' in data[0]
     
 def teste_pega_imovel_por_id_existente(client):
-    response = client.get('imoveis/1')
+    response = client.get('/imoveis/28')
     assert response.status_code == 200
     data = response.get_json()
     assert isinstance(data, dict)
@@ -38,14 +38,16 @@ def teste_pega_imovel_por_id_inexistente(client):
     assert data == {"error":"Imovel nao encontrado!"}
     
 def teste_deleta_imovel_existente(client):
-    response = client.get('imoveis/1')
+    lista = client.get("/imoveis").get_json()
+    id_existente = lista[0]["id"]
+    response = client.delete(f"/imoveis/{id_existente}")
     assert response.status_code == 200
     data = response.get_json()
-    assert data == {"message":"Imovel deletado!"}
-    
+    assert data == {"message": "Imovel deletado!"}
+
+
 def teste_deleta_imovel_inexistente(client):
-    response = client.get('imoveis/1')
+    response = client.delete("/imoveis/999999999")
     assert response.status_code == 404
     data = response.get_json()
-    assert data == {"error":"Imovel ja removido!"}
-    
+    assert data == {"error": "Imovel ja removido!"}
