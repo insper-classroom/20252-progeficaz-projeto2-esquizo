@@ -77,18 +77,25 @@ def pega_imovel_por_id(id):
 def deleta_imovel(id):
     con = get_connection()
     cursor = con.cursor()
-    cursor.execute("DELECT * FROM imoveis WHERE id=%s", (id,))
-    row = cursor.fetchone() #pega de linha em linha
+    cursor.execute("DELETE FROM imoveis WHERE id=%s", (id,))
+    con.commit()
+    linha_afetada = cursor.rowcount
     con.close()
     
 
+    if linha_afetada == 0:
+
+
     if row is None:
+
         return jsonify({"error":"Imovel ja removido!"}), 404
-    
+    return jsonify({"message":"Imovel deletado!"}), 200
+
     colunas = [desc[0] for desc in cursor.description]
     imovel={}
     for i, valor in enumerate(row):
         imovel[colunas[i]] = valor
 
     
+
 
