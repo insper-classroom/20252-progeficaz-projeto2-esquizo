@@ -53,7 +53,7 @@ def test_update_imoveis(client):
         "data_aquisicao": "2023-05-10"
     }
     
-    response = client.post('/update/1')
+    response = client.put('/update/1')
     assert response.status_code == 200
     data = response.get_json() 
     assert data['message'] == 'alguma Coisa aconteceu enquanto atualizava :0' 
