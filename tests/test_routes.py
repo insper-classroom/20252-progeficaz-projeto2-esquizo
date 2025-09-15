@@ -62,3 +62,18 @@ def teste_pega_imovel_por_id_inexistente(client):
     data = response.get_json()
     assert data == {"error":"Imovel nao encontrado!"}
     
+
+def teste_deleta_imovel_existente(client):
+    response = client.get('imoveis/1')
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data == {"message":"Imovel deletado!"}
+    
+def teste_deleta_imovel_inexistente(client):
+    response = client.get('imoveis/1')
+    assert response.status_code == 404
+    data = response.get_json()
+    assert data == {"error":"Imovel ja removido!"}
+    
+
+

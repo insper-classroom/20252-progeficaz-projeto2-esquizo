@@ -73,5 +73,22 @@ def pega_imovel_por_id(id):
         imovel[colunas[i]] = valor
     
     return jsonify(imovel), 200
+@bp.route('/imoveis/<int:id>', methods=['DELETE'])
+def deleta_imovel(id):
+    con = get_connection()
+    cursor = con.cursor()
+    cursor.execute("DELECT * FROM imoveis WHERE id=%s", (id,))
+    row = cursor.fetchone() #pega de linha em linha
+    con.close()
     
+
+    if row is None:
+        return jsonify({"error":"Imovel ja removido!"}), 404
     
+    colunas = [desc[0] for desc in cursor.description]
+    imovel={}
+    for i, valor in enumerate(row):
+        imovel[colunas[i]] = valor
+
+    
+
