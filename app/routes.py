@@ -108,3 +108,4 @@ def update_imoveis(id):
         return jsonify({"message": "nao eh possivel realizar alguma alteracao"}), 404
         
     return jsonify({"message": "Imóvel alterado com sucesso"}), 200   
+
