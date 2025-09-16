@@ -216,3 +216,5 @@ __marimo__/
 .streamlit/secrets.toml
 .cred
 ca.pem
+
+#as coisas aqui nn sao commitadas aos outros, soh a mim

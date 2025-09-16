@@ -19,7 +19,7 @@ def test_home(mock_connect_db, client):#✅
     mock_connect_db.return_value = mock_conn
     response = client.get('/')
     assert response.status_code == 200
-    assert response.get_json() == {"message": "servidor Imobiliária rodando!"}
+    assert response.get_json() == {"message": "API Imobiliária rodando!"}
 
 @patch("servidor.connect_db")
 def test_add_imoveis(mock_connect_db, client):#✅
@@ -42,7 +42,7 @@ def test_add_imoveis(mock_connect_db, client):#✅
     response = client.post('/add', json=novo_imovel)
     assert response.status_code == 201
     data = response.get_json() #pega a resposta de json do programa(mensagem q voltara)
-    assert data['message'] == 'alguma Coisa aconteceu' #faz a mensagem voltar desse jeito
+    assert data['message'] == "Imóvel adicionado com sucesso" #faz a mensagem voltar desse jeito
  
 @patch("servidor.connect_db")   #✅
 def test_update_imoveis(mock_connect_db, client):
@@ -64,7 +64,7 @@ def test_update_imoveis(mock_connect_db, client):
     response = client.put('/update/1', json=novo_imovel) #converter novo imovel como json como faria no codigo original
     assert response.status_code == 200
     data = response.get_json() 
-    assert data['message'] == 'alguma Coisa aconteceu enquanto atualizava :0' 
+    assert data['message'] == "Imóvel alterado com sucesso" 
 
 @patch("servidor.connect_db")
 def teste_lista_imoveis(mock_connect_db, client):#✅
@@ -72,6 +72,15 @@ def teste_lista_imoveis(mock_connect_db, client):#✅
     mock_cursor = MagicMock()
     mock_conn.cursor.return_value = mock_cursor
     mock_connect_db.return_value = mock_conn
+    
+    mock_cursor.description = [
+        ("id",), ("logradouro",), ("cidade",)
+    ]
+    mock_cursor.fetchall.return_value = [
+        (1, "Rua das Flores", "São Paulo"),
+        (2, "Av. Paulista", "São Paulo")
+    ]
+    
     response = client.get('/imoveis')
     assert response.status_code == 200
     data = response.get_json()
@@ -86,6 +95,16 @@ def teste_pega_imovel_por_id_existente(mock_connect_db, client): #✅
     mock_cursor = MagicMock()
     mock_conn.cursor.return_value = mock_cursor
     mock_connect_db.return_value = mock_conn
+    
+    mock_cursor.description = [
+        ("id",), ("logradouro",), ("cidade",), ("valor",)
+    ]
+
+    # Simula um registro encontrado
+    mock_cursor.fetchone.return_value = (
+        1, "Rua das Flores", "São Paulo", 500000.00
+    )
+    
     response = client.get('/imoveis/1')
     assert response.status_code == 200
     data = response.get_json()
@@ -100,6 +119,8 @@ def teste_pega_imovel_por_id_inexistente(mock_connect_db, client):#✅
     mock_cursor = MagicMock()
     mock_conn.cursor.return_value = mock_cursor
     mock_connect_db.return_value = mock_conn
+    # Simula que não encontrou nenhum registro
+    mock_cursor.fetchone.return_value = None
     response = client.get('/imoveis/9999999999999')
     assert response.status_code == 404
     data = response.get_json()
@@ -135,6 +156,11 @@ def test_list_cidades(mock_connect_db, client):
             2000000.00,
             "2021-11-15"
         )
+    ]
+    
+    mock_cursor.description = [
+        ("id",), ("logradouro",), ("tipo_logradouro",), ("bairro",),
+        ("cidade",), ("cep",), ("tipo",), ("valor",), ("data_aquisicao",)
     ]
 
     mock_connect_db.return_value = mock_conn #retornar mock no lugar da conexao real
