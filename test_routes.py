@@ -166,7 +166,7 @@ def test_list_cidades(mock_connect_db, client):
     mock_connect_db.return_value = mock_conn #retornar mock no lugar da conexao real
     
     # Faz a requisição GET para listar imóveis em São Paulo
-    response = client.get('/imoveis?cidade=São Paulo')
+    response = client.get('/imoveis%scidade=São Paulo')
     
     assert response.status_code == 200
     
@@ -187,3 +187,32 @@ def test_list_cidades(mock_connect_db, client):
     assert data[1]['tipo_logradouro'] == "Avenida"
     assert data[1]['tipo'] == "Comercial"
     assert data[1]['valor'] == 2000000.00
+
+@patch("servidor.connect_db")
+def teste_deleta_imovel_existente(mock_connect_db, client):
+    mock_conn = MagicMock()
+    mock_cursor = MagicMock()
+    mock_conn.cursor.return_value = mock_cursor
+    mock_connect_db.return_value = mock_conn
+
+    mock_cursor.rowcount = 1
+
+    response = client.delete("/imoveis/1")
+    assert response.status_code == 200
+    data = response.get_json()
+    assert data == {"message": "Imovel deletado com sucesso!"}
+
+@patch("servidor.connect_db")
+def teste_deleta_imovel_inexistente(mock_connect_db, client):
+    mock_conn = MagicMock()
+    mock_cursor = MagicMock()
+    mock_conn.cursor.return_value = mock_cursor
+    mock_connect_db.return_value = mock_conn
+
+    mock_cursor.rowcount = 0
+
+    response = client.delete("/imoveis/999999999")
+    assert response.status_code == 404
+    data = response.get_json()
+    assert data == {"error": "Imovel nao encontrado!"}
+    

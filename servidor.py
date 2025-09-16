@@ -60,7 +60,7 @@ def add_imoveis():#✅
     
     cursor.execute("""
         INSERT INTO imoveis (logradouro, tipo_logradouro, bairro, cidade, cep, tipo, valor, data_aquisicao)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
     """, (logradouro, tipo_logradouro, bairro, cidade, cep, tipo, valor, data_aquisicao)) #o que cada incognita representa
     conn.commit()
 
@@ -124,15 +124,15 @@ def update_imoveis(id):#✅
         cursor = con.cursor()
         cursor.execute("""
             UPDATE imoveis
-            SET logradouro = ?, 
-                tipo_logradouro = ?, 
-                bairro = ?, 
-                cidade = ?, 
-                cep = ?, 
-                tipo = ?, 
-                valor = ?, 
-                data_aquisicao = ?
-            WHERE id = ?
+            SET logradouro = %s, 
+                tipo_logradouro = %s, 
+                bairro = %s, 
+                cidade = %s, 
+                cep = %s, 
+                tipo = %s, 
+                valor = %s, 
+                data_aquisicao = %s
+            WHERE id = %s
         """, (logradouro, tipo_logradouro, bairro, cidade, cep, tipo, valor, data_aquisicao, id)) #o que cada incognita representa
         con.commit()
     
@@ -145,7 +145,7 @@ def update_imoveis(id):#✅
 def list_cidades(cidade):#✅
     con = connect_db()
     cursor = con.cursor()
-    cursor.execute("SELECT * FROM imoveis WHERE cidade = ?", (cidade,)) #VERIFICAR
+    cursor.execute("SELECT * FROM imoveis WHERE cidade = %s", (cidade,)) #VERIFICAR
     rows = cursor.fetchall() #todas as linhas
     con.close()
     
@@ -166,3 +166,17 @@ def list_cidades(cidade):#✅
 
 if __name__ == '__main__': #roda o flask
     app.run(debug=True)
+    
+@app.route('/imoveis/<int:id>', methods=['DELETE'])
+def deleta_imovel(id):
+    con = connect_db()
+    cursor = con.cursor()
+    cursor.execute("DELETE FROM imoveis WHERE id = %s", (id,))
+    con.commit()
+    linha_afetada = cursor.rowcount
+    con.close()
+
+    if linha_afetada == 0:
+        return jsonify({"error": "Imovel nao encontrado!"}), 404
+
+    return jsonify({"message": "Imovel deletado com sucesso!"}), 200
