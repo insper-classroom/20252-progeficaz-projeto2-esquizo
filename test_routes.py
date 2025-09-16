@@ -215,4 +215,66 @@ def teste_deleta_imovel_inexistente(mock_connect_db, client):
     assert response.status_code == 404
     data = response.get_json()
     assert data == {"error": "Imovel nao encontrado!"}
+
+@patch("servidor.connect_db")#✅
+def test_list_tipos(mock_connect_db, client):
+    mock_conn = MagicMock()
+    mock_cursor = MagicMock()
+    mock_conn.cursor.return_value = mock_cursor #falsifica movimentos futuramente reais
+
+    # Resultado fictício que o banco retornaria
+    mock_cursor.fetchall.return_value = [
+        (
+            1,
+            "Rua A",
+            "Rua",
+            "Centro",
+            "São Paulo",
+            "01000-000",
+            "Casa",
+            350000.00,
+            "2022-01-10"
+        ),
+        (
+            2,
+            "Rua B",
+            "Rua",
+            "Jardins",
+            "São Paulo",
+            "01410-100",
+            "Comercial",
+            750000.00,
+            "2021-07-20"
+        )
+    ]
     
+    mock_cursor.description = [
+        ("id",), ("logradouro",), ("tipo_logradouro",), ("bairro",),
+        ("cidade",), ("cep",), ("tipo",), ("valor",), ("data_aquisicao",)
+    ]
+
+    mock_connect_db.return_value = mock_conn #retornar mock no lugar da conexao real
+    
+    # Faz a requisição GET para listar imóveis em São Paulo
+    response = client.get('/imoveis/tipo=Casa')
+    
+    assert response.status_code == 200
+    
+    data = response.get_json()
+    
+    # Verifica se todos os imóveis vieram na resposta
+    assert isinstance(data, list)
+    assert len(data) == 2
+    
+
+    assert data[0]['logradouro'] == "Rua A"
+    assert data[0]['bairro'] == "Centro"
+    assert data[0]['cidade'] == "São Paulo"
+    assert data[0]['tipo'] == "Casa"
+    assert data[0]['valor'] == 350000.00
+
+    assert data[1]['logradouro'] == "Rua B"
+    assert data[1]['bairro'] == "Jardins"
+    assert data[1]['cidade'] == "São Paulo"
+    assert data[1]['tipo'] == "Casa"
+    assert data[1]['valor'] == 750000.00

@@ -180,3 +180,4 @@ def deleta_imovel(id):
         return jsonify({"error": "Imovel nao encontrado!"}), 404
 
     return jsonify({"message": "Imovel deletado com sucesso!"}), 200
+
