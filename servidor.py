@@ -181,3 +181,24 @@ def deleta_imovel(id):
 
     return jsonify({"message": "Imovel deletado com sucesso!"}), 200
 
+@app.route('/imoveis/tipo=<tipo>', methods=['GET'])
+def list_tipos(tipo):#✅
+    con = connect_db()
+    cursor = con.cursor()
+    cursor.execute("SELECT * FROM imoveis WHERE cidade = %s", (tipo,)) #VERIFICAR
+    rows = cursor.fetchall() #todas as linhas
+    colunas = [desc[0] for desc in cursor.description]
+    con.close()
+    
+    imoveis = []
+    for row in rows:
+        item = {}
+        for i, valor in enumerate(row):
+            item[colunas[i]] = valor
+        imoveis.append(item)
+
+    return jsonify(imoveis)
+    
+
+if __name__ == '__main__': #roda o flask
+    app.run(debug=True)

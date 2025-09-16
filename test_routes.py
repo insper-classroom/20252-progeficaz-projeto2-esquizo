@@ -166,7 +166,7 @@ def test_list_cidades(mock_connect_db, client):
     mock_connect_db.return_value = mock_conn #retornar mock no lugar da conexao real
     
     # Faz a requisição GET para listar imóveis em São Paulo
-    response = client.get('/imoveis%scidade=São Paulo')
+    response = client.get('/imoveis/cidade=São Paulo')
     
     assert response.status_code == 200
     
@@ -242,7 +242,7 @@ def test_list_tipos(mock_connect_db, client):
             "Jardins",
             "São Paulo",
             "01410-100",
-            "Comercial",
+            "Casa",
             750000.00,
             "2021-07-20"
         )
